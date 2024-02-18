@@ -1,0 +1,34 @@
+diff a/user-check.sh b/user-check.sh	(rejected hunks)
+@@ -3,27 +3,14 @@
+ # Written by Emre Ozudogru
+ 
+ # Detect RHEL version
+-detect_rhel_version() {
+-  release_file="/etc/os-release"  # Use /etc/os-release for accuracy and compatibility
+-
+-  rhel_version=$(grep -i -w "VERSION_ID" "$release_file" | cut -d "=" -f 2 | tr -d '"')
+-
+-  if [[ -z "$rhel_version" ]]; then
+-    echo "Unable to determine RHEL version. Defaulting to RHEL 7 logic."
+-    rhel_version="7"  # Assume RHEL 7 if unable to detect
+-  fi
+-
+-  echo "Detected RHEL version $rhel_version."
+-}
+-
+-# Determine last login position based on RHEL version
++source /etc/os-release
+ get_last_login_position() {
+-  case "$rhel_version" in
+-    7)
++  case "$VERSION_ID" in
++    7*)
+       last_login_position=44  # Position in RHEL 7
+       ;;
+-    8|9)
+-      last_login_position=42  # Position in RHEL 8 and 9
++    8*|9*)
++      last_login_position=69  # Position in RHEL 8 and 9
+       ;;
+     *)
+       echo "Unsupported RHEL version: $rhel_version. Using default position."
