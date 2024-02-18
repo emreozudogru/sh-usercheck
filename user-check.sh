@@ -23,7 +23,7 @@ get_last_login_position() {
       last_login_position=44  # Position in RHEL 7
       ;;
     8|9)
-      last_login_position=42  # Position in RHEL 8 and 9
+      last_login_position=69  # Position in RHEL 8 and 9
       ;;
     *)
       echo "Unsupported RHEL version: $rhel_version. Using default position."
