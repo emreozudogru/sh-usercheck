@@ -43,6 +43,7 @@ for user in $users; do
     case "$status" in
       LK) status="Disabled-locked" ;;
       PS) status="Enabled" ;;
+      user.) status="IPA-User"
       *)  status="$status"          ;;
     esac
   fi
