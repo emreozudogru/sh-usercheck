@@ -43,7 +43,7 @@ for user in $users; do
     case "$status" in
       LK) status="Disabled-locked" ;;
       PS) status="Enabled" ;;
-      user.) status="IPA-User"
+      user.) status="IPA-User";;
       *)  status="$status"          ;;
     esac
   fi
@@ -55,7 +55,7 @@ for user in $users; do
   fi
 
   # Get last login date (consider error handling and unavailable information)
-  echo Las Pos: $last_login_position
+  #echo Las Pos: $last_login_position
   last_login=$(lastlog -u $user 2>/dev/null | awk -v pos="$last_login_position" '{print substr($0,pos,30)}' | tail -n 1 || echo "N/A")
  # last_login=$(lastlog -u $user 2>/dev/null | awk -v pos="$last_login_position" '{print substr($0,pos,30)}' | tail -n 1 || echo "N/A")
 
