@@ -4,12 +4,13 @@
 
 # Detect RHEL version
 source /etc/os-release
-get_last_login_position() {
   case "$VERSION_ID" in
     7*)
+      echo RHEL7 Detected $rhel_version
       last_login_position=44  # Position in RHEL 7
       ;;
     8*|9*)
+      echo RHEL89 Detected $rhel_version
       last_login_position=69  # Position in RHEL 8 and 9
       ;;
     *)
@@ -17,9 +18,9 @@ get_last_login_position() {
       last_login_position=44  # Use default for unknown versions
       ;;
   esac
-}
 
 
+pause
 # Get all users
 users_passwd=$(cut -d: -f1 /etc/passwd)
 users_lastlog=$( lastlog | awk '{print $1}')
