@@ -2,7 +2,7 @@
 #
 # Written by Emre Ozudogru
 
-# Detect RHEL version
+# Detect RHEL version last log date position
 source /etc/os-release
   case "$VERSION_ID" in
     7*)
@@ -19,18 +19,16 @@ source /etc/os-release
       ;;
   esac
 
-
 pause
-# Get all users
+# Get all users from /etc/passwd and lastlog
 users_passwd=$(cut -d: -f1 /etc/passwd)
-users_lastlog=$( lastlog | awk '{print $1}')
+users_lastlog=$( lastlog | awk '{print $1}' | tail -n +2 )
 users=$(for R in "${users_passwd[@]}" "${users_lastlog[@]}" ; do echo "$R" ; done | sort -du)
-
+echo "Username;Status;Sudo-Rights;Last-Login"
 
 for user in $users; do
   # Check for presence of "nologin" in the shell field
   shell=$(grep -E "^$user:.*nologin$" /etc/passwd)
-
 
   # Determine user status based on shell field and passwd -S output
   if [[ -n "$shell" ]]; then
@@ -39,11 +37,11 @@ for user in $users; do
     # Use `passwd -S` for compatibility and security (avoid sensitive shadow file details)
     status=$(passwd -S $user | awk '{print $2}')
 
-    # Handle locked (LK) and inactive (PS) statuses accurately
+    # Handle usrer statuses accurately
     case "$status" in
       LK) status="Disabled-locked" ;;
       PS) status="Enabled" ;;
-      user.) status="IPA-User"
+      user.) status="IPA-User";;
       *)  status="$status"          ;;
     esac
   fi
@@ -54,11 +52,8 @@ for user in $users; do
     sudo_rights="Yes"
   fi
 
-  # Get last login date (consider error handling and unavailable information)
-  echo Las Pos: $last_login_position
+  # Get last login date
   last_login=$(lastlog -u $user 2>/dev/null | awk -v pos="$last_login_position" '{print substr($0,pos,30)}' | tail -n 1 || echo "N/A")
- # last_login=$(lastlog -u $user 2>/dev/null | awk -v pos="$last_login_position" '{print substr($0,pos,30)}' | tail -n 1 || echo "N/A")
-
   echo "$user;$status;$sudo_rights;$last_login"
 done
 
