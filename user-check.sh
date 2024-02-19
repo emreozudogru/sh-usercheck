@@ -52,7 +52,12 @@ for user in $users; do
     sudo_rights="Yes"
   fi
 
+<<<<<<< HEAD
   # Get last login date
+=======
+  # Get last login date (consider error handling and unavailable information)
+  #echo Las Pos: $last_login_position
+>>>>>>> 0cc13e67a3deea8f3c8651a93e78fe80e4193a40
   last_login=$(lastlog -u $user 2>/dev/null | awk -v pos="$last_login_position" '{print substr($0,pos,30)}' | tail -n 1 || echo "N/A")
   echo "$user;$status;$sudo_rights;$last_login"
 done
