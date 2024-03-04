@@ -37,12 +37,9 @@ sed -i 's/#enumerate = true/enumerate = true/' /etc/sssd/sssd.conf
 service sssd restart
 sleep 1
 
-# Get all users from /etc/passwd and lastlog and sort them uniquely
+# Get all users from /etc/passwd and lastlog and sort them uniquely and exlude system users
 #users=$(comm -12 <(cut -d: -f1 /etc/passwd | sort) <(lastlog | awk '{print $1}' | tail -n +2 | sort))
-usersall=$(cat <(cut -d: -f1 /etc/passwd) <(lastlog | awk '{print $1}' | tail -n +2) | sort -u)
-# Exclude system users
-userssystem=(adm avahi bin chrony clevis cockpit-ws cockpit-wsinstance colord daemon dbus dnsmasq flatpak ftp games gdm geoclue gnome-initial-setup libstoragemgmt lp mail nobody operator pipewire polkitd rpc rpcuser rtkit setroubleshoot sshd sssd systemd-coredump systemd-oom tcpdump tss x2gouser zabbix)
-users=($(grep -vxFf <(printf "%s\n" "${usersall[@]}") <(printf "%s\n" "${userssystem[@]}")))
+users=$(cat <(cut -d: -f1 /etc/passwd) <(lastlog | awk '{print $1}' | tail -n +2) | sort -u | grep -v -E "adm|avahi|bin|chrony|clevis|cockpit-ws|cockpit-wsinstance|colord|daemon|dbus|dnsmasq|flatpak|ftp|games|gdm|geoclue|gnome-initial-setup|libstoragemgmt|lp|mail|nobody|operator|pipewire|polkitd|rpc|rpcuser|rtkit|setroubleshoot|sshd|sssd|systemd-coredump|systemd-oom|tcpdump|tss|x2gouser|zabbix")
 
 echo
 echo "Username,Status,Sudo-Rights,Last-Login"
