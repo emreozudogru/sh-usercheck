@@ -14,15 +14,15 @@ read -p "Press enter to continue"
 source /etc/os-release
   case "$VERSION_ID" in
     7*)
-      echo RHEL7 Detected $rhel_version
+      echo RHEL 7 detected. Exact Version is $VERSION_ID
       last_login_position=44  # Position in RHEL 7
       ;;
     8*|9*)
-      echo RHEL89 Detected $rhel_version
+      echo RHEL 8 or 9 detected. Exact Version is $VERSION_ID
       last_login_position=69  # Position in RHEL 8 and 9
       ;;
     *)
-      echo "Unsupported RHEL version: $rhel_version. Using default position."
+      echo "Unsupported RHEL version: $VERSION_ID. Using default position."
       last_login_position=44  # Use default for unknown versions
       ;;
   esac
