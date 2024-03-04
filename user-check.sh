@@ -71,7 +71,7 @@ for user in $users; do
 
   # Check if the user has sudo rights by using sudo -l -U
   sudo_rights="No"
-  if sudo -l -U $user 2>/dev/null | grep -q "(ALL)"; then
+  if sudo -l -U $user 2>/dev/null | grep -q "may run the following commands on"; then
     sudo_rights="Yes"
   fi
 
