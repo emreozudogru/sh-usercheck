@@ -35,7 +35,7 @@ esac
 sed -i 's/#enumerate = true/enumerate = true/' /etc/sssd/sssd.conf
 # Restart the sssd service to apply the changes
 service sssd restart
-sleep 5
+sleep 1
 
 # Get all users from /etc/passwd and lastlog and sort them uniquely
 #users=$(comm -12 <(cut -d: -f1 /etc/passwd | sort) <(lastlog | awk '{print $1}' | tail -n +2 | sort))
@@ -60,9 +60,9 @@ for user in $users; do
         status="IPA-User"
         # Check if the IPA user is disabled
         if ipa user-status $user 2>/dev/null | awk 'NR==2 {print $3}' | grep -q True; then
-          status="IPA-Disabled"
+          status="Disabled-IPA"
         else
-          status="IPA-Enabled"
+          status="Enabled-IPA"
         fi
         ;;
       *)  status="$status" ;;
@@ -80,6 +80,7 @@ for user in $users; do
   # Print the user information in CSV format
   echo "$user,$status,$sudo_rights,$last_login"
 done
+echo
 
 # Disable user enumeration by commenting the line in /etc/sssd/sssd.conf
 sed -i 's/enumerate = true/#enumerate = true/' /etc/sssd/sssd.conf
