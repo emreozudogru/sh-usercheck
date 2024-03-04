@@ -31,6 +31,7 @@ source /etc/os-release
 users_passwd=$(cut -d: -f1 /etc/passwd)
 users_lastlog=$( lastlog | awk '{print $1}' | tail -n +2 )
 users=$(for R in "${users_passwd[@]}" "${users_lastlog[@]}" ; do echo "$R" ; done | sort -du)
+echo
 echo "Username;Status;Sudo-Rights;Last-Login"
 
 for user in $users; do
