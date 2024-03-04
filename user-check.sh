@@ -39,7 +39,10 @@ sleep 1
 
 # Get all users from /etc/passwd and lastlog and sort them uniquely
 #users=$(comm -12 <(cut -d: -f1 /etc/passwd | sort) <(lastlog | awk '{print $1}' | tail -n +2 | sort))
-users=$(cat <(cut -d: -f1 /etc/passwd) <(lastlog | awk '{print $1}' | tail -n +2) | sort -u)
+usersall=$(cat <(cut -d: -f1 /etc/passwd) <(lastlog | awk '{print $1}' | tail -n +2) | sort -u)
+# Exclude system users
+userssystem=(adm avahi bin chrony clevis cockpit-ws cockpit-wsinstance colord daemon dbus dnsmasq flatpak ftp games gdm geoclue gnome-initial-setup libstoragemgmt lp mail nobody operator pipewire polkitd rpc rpcuser rtkit setroubleshoot sshd sssd systemd-coredump systemd-oom tcpdump tss x2gouser zabbix)
+users=($(grep -vxFf <(printf "%s\n" "${usersall[@]}") <(printf "%s\n" "${userssystem[@]}")))
 
 echo
 echo "Username,Status,Sudo-Rights,Last-Login"
