@@ -42,7 +42,7 @@ for user in $users; do
       LK) status="Disabled-locked" ;;
       PS) status="Enabled" ;;
       user.) status="IPA-User"
-        ipadisabled=$(ipa user-status pquezada 2>/dev/null | awk 'NR==2 {print $3}')
+        ipadisabled=$(ipa user-status $user 2>/dev/null | awk 'NR==2 {print $3}')
         echo ipadisabled $ipadisabled
         case "$ipadisabled" in
           True) status="IPA-Disabled";;
