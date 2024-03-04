@@ -43,7 +43,7 @@ for user in $users; do
       PS) status="Enabled" ;;
       user.) status="IPA-User"
         ipa-disabled=$(ipa user-status pquezada 2>/dev/null | awk 'NR==2 {print $3}')
-        case "$ipa-disabled"
+        case "$ipa-disabled" in
           True) status="IPA-Disabled";;
           False) status="IPA-Enabled";;
         esac
