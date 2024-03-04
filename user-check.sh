@@ -2,6 +2,14 @@
 #
 # Written by Emre Ozudogru
 
+# Print intoduction for this command
+printf "%s\n" "This program detects all access rights for this server. While it is running, it can affect the performance. Please use this command at non-peak hours."
+printf "%s\n" "If this server is ipa joined, please use kinit before starting to get your kerberos ticket."
+printf "%s\n" "If you use this command for the first time, please add #enumerate = true after [domain/nyc.int.boldyn.net] line."
+printf "\n"
+read -p "Press enter to continue"
+
+
 # Detect RHEL version last log date position
 source /etc/os-release
   case "$VERSION_ID" in
@@ -19,7 +27,6 @@ source /etc/os-release
       ;;
   esac
 
-pause
 # Get all users from /etc/passwd and lastlog
 users_passwd=$(cut -d: -f1 /etc/passwd)
 users_lastlog=$( lastlog | awk '{print $1}' | tail -n +2 )
@@ -43,7 +50,6 @@ for user in $users; do
       PS) status="Enabled" ;;
       user.) status="IPA-User"
         ipadisabled=$(ipa user-status $user 2>/dev/null | awk 'NR==2 {print $3}')
-        echo ipadisabled $ipadisabled
         case "$ipadisabled" in
           True) status="IPA-Disabled";;
           False) status="IPA-Enabled";;
