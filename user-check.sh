@@ -11,6 +11,7 @@ If you use this script for the first time, please add #enumerate = true after [d
 EOF
 # Wait for user input to continue
 read -p "Press enter to continue"
+echo
 
 # Detect RHEL version and last login date position
 source /etc/os-release
@@ -34,10 +35,12 @@ esac
 sed -i 's/#enumerate = true/enumerate = true/' /etc/sssd/sssd.conf
 # Restart the sssd service to apply the changes
 service sssd restart
-sleep 1
+sleep 5
 
 # Get all users from /etc/passwd and lastlog and sort them uniquely
-users=$(comm -12 <(cut -d: -f1 /etc/passwd | sort) <(lastlog | awk '{print $1}' | tail -n +2 | sort))
+#users=$(comm -12 <(cut -d: -f1 /etc/passwd | sort) <(lastlog | awk '{print $1}' | tail -n +2 | sort))
+users=$(cat <(cut -d: -f1 /etc/passwd) <(lastlog | awk '{print $1}' | tail -n +2) | sort -u)
+
 echo
 echo "Username,Status,Sudo-Rights,Last-Login"
 
