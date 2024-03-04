@@ -42,8 +42,9 @@ for user in $users; do
       LK) status="Disabled-locked" ;;
       PS) status="Enabled" ;;
       user.) status="IPA-User"
-        ipa-disabled=$(ipa user-status pquezada 2>/dev/null | awk 'NR==2 {print $3}')
-        case "$ipa-disabled" in
+        ipadisabled=$(ipa user-status pquezada 2>/dev/null | awk 'NR==2 {print $3}')
+        echo ipadisabled $ipadisabled
+        case "$ipadisabled" in
           True) status="IPA-Disabled";;
           False) status="IPA-Enabled";;
         esac
