@@ -34,6 +34,7 @@ esac
 sed -i 's/#enumerate = true/enumerate = true/' /etc/sssd/sssd.conf
 # Restart the sssd service to apply the changes
 service sssd restart
+sleep 1
 
 # Get all users from /etc/passwd and lastlog and sort them uniquely
 users=$(comm -12 <(cut -d: -f1 /etc/passwd | sort) <(lastlog | awk '{print $1}' | tail -n +2 | sort))
@@ -82,3 +83,4 @@ sed -i 's/enumerate = true/#enumerate = true/' /etc/sssd/sssd.conf
 
 # Restart the sssd service to apply the changes
 service sssd restart
+sleep 1
