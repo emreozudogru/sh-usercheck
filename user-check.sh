@@ -46,8 +46,9 @@ echo
 echo "Username,Status,Sudo-Rights,Last-Login"
 
 # Loop through each user and get their status, sudo rights, and last login date
-if [[ $(id -u "$user") -gt 1000 ]]; then
-  for user in $users; do
+
+for user in $users; do
+  if [[ $(id -u "$user") -gt 1000 ]]; then
     # Check if the user has nologin as their shell
     if grep -qE "^$user:.*nologin$" /etc/passwd; then
       status="Disabled-nologin"
@@ -82,8 +83,8 @@ if [[ $(id -u "$user") -gt 1000 ]]; then
     # Print the user information in CSV format
     
     echo "$user,$status,$sudo_rights,$last_login"
-  done
-fi
+  fi
+done
 echo
 
 # Disable user enumeration by commenting the line in /etc/sssd/sssd.conf
