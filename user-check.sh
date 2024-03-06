@@ -39,47 +39,51 @@ sleep 1
 
 # Get all users from /etc/passwd and lastlog and sort them uniquely and exlude system users
 #users=$(comm -12 <(cut -d: -f1 /etc/passwd | sort) <(lastlog | awk '{print $1}' | tail -n +2 | sort))
-users=$(cat <(cut -d: -f1 /etc/passwd) <(lastlog | awk '{print $1}' | tail -n +2) | sort -u | grep -v -E "adm|avahi|bin|chrony|clevis|cockpit-ws|cockpit-wsinstance|colord|daemon|dbus|dnsmasq|flatpak|ftp|games|gdm|geoclue|gnome-initial-setup|libstoragemgmt|lp|mail|nobody|operator|pipewire|polkitd|rpc|rpcuser|rtkit|setroubleshoot|sshd|sssd|systemd-coredump|systemd-oom|tcpdump|tss|x2gouser|zabbix")
-
+#users=$(cat <(cut -d: -f1 /etc/passwd) <(lastlog | awk '{print $1}' | tail -n +2) | sort -u | grep -v -E "adm|avahi|bin|chrony|clevis|cockpit-ws|cockpit-wsinstance|colord|daemon|dbus|dnsmasq|flatpak|ftp|games|gdm|geoclue|gnome-initial-setup|halt|libstoragemgmt|lp|mail|nobody|operator|pipewire|polkitd|rpc|rpcuser|rtkit|setroubleshoot|shutdown|sshd|sssd|systemd-coredump|sync|systemd-oom|tcpdump|tss|x2gouser|zabbix")
+#users=$(lastlog | awk '{print $1}' | tail -n +2 | grep -v -E "adm|avahi|bin|chrony|clevis|cockpit-ws|cockpit-wsinstance|colord|daemon|dbus|dnsmasq|flatpak|ftp|games|gdm|geoclue|gnome-initial-setup|halt|libstoragemgmt|lp|mail|nobody|operator|pipewire|polkitd|rpc|rpcuser|rtkit|setroubleshoot|shutdown|sshd|sssd|systemd-coredump|sync|systemd-oom|tcpdump|tss|x2gouser|zabbix")
+users=$(lastlog | awk '{print $1}' | tail -n +2 )
 echo
 echo "Username,Status,Sudo-Rights,Last-Login"
 
 # Loop through each user and get their status, sudo rights, and last login date
-for user in $users; do
-  # Check if the user has nologin as their shell
-  if grep -qE "^$user:.*nologin$" /etc/passwd; then
-    status="Disabled-nologin"
-  else
-    # Use passwd -S for compatibility and security
-    status=$(passwd -S $user | awk '{print $2}')
-    # Handle different user statuses
-    case "$status" in
-      LK) status="Disabled-locked" ;;
-      PS) status="Enabled" ;;
-      user.) # IPA user
-        status="IPA-User"
-        # Check if the IPA user is disabled
-        if ipa user-status $user 2>/dev/null | awk 'NR==2 {print $3}' | grep -q True; then
-          status="Disabled-IPA"
-        else
-          status="Enabled-IPA"
-        fi
-        ;;
-      *)  status="$status" ;;
-    esac
-  fi
-
-  # Check if the user has sudo rights by using sudo -l -U
-  sudo_rights="No"
-  if sudo -l -U $user 2>/dev/null | grep -q "may run the following commands on"; then
-    sudo_rights="Yes"
-  fi
-
-  # Get the last login date by using lastlog -u and awk
-  last_login=$(lastlog -u $user 2>/dev/null | awk -v pos="$last_login_position" '{print substr($0,pos,30)}' | tail -n 1 || echo "N/A")
-  # Print the user information in CSV format
-  echo "$user,$status,$sudo_rights,$last_login"
-done
+if [[ $(id -u "$user") -gt 1000 ]]; then
+  for user in $users; do
+    # Check if the user has nologin as their shell
+    if grep -qE "^$user:.*nologin$" /etc/passwd; then
+      status="Disabled-nologin"
+    else
+      # Use passwd -S for compatibility and security
+      status=$(passwd -S $user | awk '{print $2}')
+      # Handle different user statuses
+      case "$status" in
+        LK) status="Disabled-locked" ;;
+        PS) status="Enabled" ;;
+        user.) # IPA user
+          status="IPA-User"
+          # Check if the IPA user is disabled
+          if ipa user-status $user 2>/dev/null | awk 'NR==2 {print $3}' | grep -q True; then
+            status="Disabled-IPA"
+          else
+            status="Enabled-IPA"
+          fi
+          ;;
+        *)  status="$status" ;;
+      esac
+    fi
+  
+    # Check if the user has sudo rights by using sudo -l -U
+    sudo_rights="No"
+    if sudo -l -U $user 2>/dev/null | grep -q "may run the following commands on"; then
+      sudo_rights="Yes"
+    fi
+  
+    # Get the last login date by using lastlog -u and awk
+    last_login=$(lastlog -u $user 2>/dev/null | awk -v pos="$last_login_position" '{print substr($0,pos,30)}' | tail -n 1 || echo "N/A")
+    # Print the user information in CSV format
+    
+    echo "$user,$status,$sudo_rights,$last_login"
+  done
+fi
 echo
 
 # Disable user enumeration by commenting the line in /etc/sssd/sssd.conf
